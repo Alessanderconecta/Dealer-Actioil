@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Dealer actioil</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="theme-color" content="#0a1020" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Dealer actioil" />
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0a1020; --card:#111a30; --card2:#0c1426; --line:#223052; --ink:#e8edf8; --muted:#8c9ab9;
+    --blue:#5b8cff; --blue-d:#2f5fd6; --red:#ff4d3d; --red-d:#d9281c; --ok:#22c55e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  [hidden]{display:none !important;}
+  body{
+    background:radial-gradient(900px 420px at 50% -140px,#18294f 0,rgba(10,16,32,0) 72%) no-repeat, var(--bg);
+    color:var(--ink);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    -webkit-text-size-adjust:100%;
+    padding-bottom:calc(104px + env(safe-area-inset-bottom));
+    min-height:100vh;
+  }
+  .top{
+    position:relative;
+    background:linear-gradient(180deg,#101c3a,#0a1020);
+    padding:14px 18px; padding-top:calc(14px + env(safe-area-inset-top));
+    display:flex; align-items:center; gap:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .top::after{
+    content:""; position:absolute; left:0; right:0; bottom:-1px; height:3px;
+    background:linear-gradient(90deg,var(--blue),var(--red));
+  }
+  .top img{height:58px; width:auto; display:block;}
+  .top h1{margin:0; font-size:21px; line-height:1.1; color:#fff; font-weight:800; letter-spacing:-.01em;}
+  .top h1 span{color:var(--red);}
+  .top p{margin:4px 0 0; font-size:12.5px; color:var(--muted);}
+  .wrap{max-width:560px; margin:0 auto; padding:16px 14px 0;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 14px; margin-bottom:12px;
+    box-shadow:0 8px 28px rgba(0,0,0,.28);
+  }
+  .card h2{margin:0 0 14px; font-size:11.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--blue);}
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{display:block; font-size:14px; font-weight:700; margin-bottom:7px;}
+  label .req{color:var(--red);}
+  .hint{font-size:12px; color:var(--muted); margin-top:5px;}
+  select,input[type=text],input[type=tel]{
+    width:100%; min-height:48px; padding:11px 12px; font-size:16px; font-family:inherit; color:var(--ink);
+    background:var(--card2); border:1.5px solid var(--line); border-radius:12px; appearance:none; -webkit-appearance:none;
+  }
+  textarea{
+    width:100%; min-height:84px; padding:11px 12px; font-size:16px; font-family:inherit; color:var(--ink);
+    background:var(--card2); border:1.5px solid var(--line); border-radius:12px; resize:vertical;
+  }
+  ::placeholder{color:#62708f; opacity:1;}
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' stroke='%238c9ab9' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:34px;
+  }
+  select:focus,input:focus,textarea:focus{outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(91,140,255,.22);}
+  input:disabled,select:disabled{background:#0a1121; color:#566383; border-color:#1a2540;}
+  input.ro{background:#0a1121; color:var(--muted); border-style:dashed; cursor:not-allowed; -webkit-user-select:none; user-select:none;}
+  input.ro:focus{border-color:var(--line); box-shadow:none;}
+  .pills{display:grid; grid-template-columns:repeat(var(--cols,2),1fr); gap:8px;}
+  .pill{
+    min-height:48px; padding:8px 6px; font:inherit; font-size:14.5px; font-weight:700; text-align:center;
+    color:var(--ink); background:var(--card2); border:1.5px solid var(--line); border-radius:12px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; transition:background .12s, border-color .12s, transform .06s;
+  }
+  .pill:active{transform:scale(.98);}
+  .pill.active{
+    background:linear-gradient(180deg,var(--blue),var(--blue-d)); border-color:var(--blue); color:#fff;
+    box-shadow:0 4px 16px rgba(47,95,214,.45);
+  }
+  .pills.sm .pill{min-height:44px; font-size:14px;}
+  .pill.tipo-fech.active{background:linear-gradient(180deg,#34d67b,#16a34a); border-color:#34d67b; box-shadow:0 4px 16px rgba(22,163,74,.4);}
+  .field.invalid > label{color:var(--red);}
+  .field.invalid select,.field.invalid input,.field.invalid textarea,.field.invalid .pill{border-color:var(--red);}
+  .field.invalid .pill.active{border-color:var(--blue);}
+  .err{display:none; font-size:12px; color:var(--red); margin-top:5px; font-weight:600;}
+  .field.invalid .err{display:block;}
+  .info{margin:0 0 16px; padding:10px 12px; background:rgba(91,140,255,.13); border-radius:12px; font-size:13px; color:#b9cfff; font-weight:600;}
+  .info.warn{background:rgba(250,204,21,.1); color:#f1d36e; font-weight:500;}
+  #banTeste{
+    margin:0 0 12px; padding:10px 12px; border-radius:12px; font-size:13px; font-weight:800; text-align:center;
+    background:rgba(255,77,61,.14); border:1px dashed var(--red); color:#ff9b91; letter-spacing:.02em;
+  }
+  #pend{
+    margin:0 0 12px; padding:10px 12px; background:rgba(250,204,21,.1); border:1px solid rgba(250,204,21,.28); border-radius:12px;
+    font-size:13px; color:#f1d36e; display:flex; gap:10px; align-items:center; justify-content:space-between;
+  }
+  #pend button{
+    flex:none; font:inherit; font-size:13px; font-weight:700; color:#fff; background:var(--blue-d);
+    border:none; border-radius:9px; padding:8px 12px; cursor:pointer;
+  }
+  .bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:5; background:rgba(10,16,32,.9);
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border-top:1px solid var(--line); padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .bar button{
+    display:block; width:100%; max-width:560px; margin:0 auto; min-height:54px; border:none; border-radius:14px;
+    background:linear-gradient(180deg,#ff6a57,var(--red-d)); color:#fff; font:inherit; font-size:17px; font-weight:800; cursor:pointer;
+    box-shadow:0 8px 24px rgba(217,40,28,.4);
+  }
+  .bar button:active{filter:brightness(.92);}
+  .toast{
+    position:fixed; left:50%; bottom:calc(92px + env(safe-area-inset-bottom)); z-index:10;
+    transform:translate(-50%,160%); opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease;
+    background:#16a34a; color:#fff; padding:12px 20px; border-radius:12px; font-weight:700; font-size:14.5px;
+    box-shadow:0 8px 24px rgba(0,0,0,.45); max-width:90%; text-align:center;
+  }
+  .toast.show{transform:translate(-50%,0); opacity:1;}
+  #erro{margin:12px 0; padding:12px; background:rgba(255,77,61,.14); color:#ffb1aa; border-radius:12px; font-size:14px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <img src="logo.png" alt="actioil" />
+  <div>
+    <h1>Dealer <span>actioil</span></h1>
+    <p>Registro de visita ao ponto de venda</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banTeste" hidden>AMBIENTE DE TESTE · as visitas vão para a planilha de teste</div>
+  <div id="erro" hidden>Não foi possível carregar os dados do aplicativo. Verifique a conexão e abra novamente.</div>
+  <div id="pend" hidden><span id="pendTxt"></span><button type="button" id="pendBtn">Enviar agora</button></div>
+
+  <form id="f" novalidate autocomplete="off">
+
+    <section class="card">
+      <h2>Quem está visitando</h2>
+      <div class="field" id="fl-regional">
+        <label>Regional <span class="req">*</span></label>
+        <div class="pills" id="regional"></div>
+        <div class="err">Selecione a regional.</div>
+      </div>
+      <div class="field" id="fl-rep">
+        <label for="rep">Representante <span class="req">*</span></label>
+        <select id="rep" disabled><option value="">Selecione a regional primeiro</option></select>
+        <div class="hint">Fica salvo neste aparelho.</div>
+        <div class="err">Selecione o representante.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Local</h2>
+      <div class="field" id="fl-uf" hidden>
+        <label>UF <span class="req">*</span></label>
+        <div class="pills sm" id="uf"></div>
+        <div class="err">Selecione a UF.</div>
+      </div>
+      <div class="field" id="fl-cidade">
+        <label for="cidade">Cidade <span class="req">*</span></label>
+        <input type="text" id="cidade" list="dl-cidades" placeholder="Selecione a UF primeiro" disabled autocapitalize="words" />
+        <datalist id="dl-cidades"></datalist>
+        <div class="err">Escolha uma cidade da lista.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ponto de venda</h2>
+      <div class="field" id="fl-segmento">
+        <label>Segmento <span class="req">*</span></label>
+        <div class="pills" id="segmento"></div>
+        <div class="err">Selecione o segmento.</div>
+      </div>
+
+      <div class="field" id="fl-marca" hidden>
+        <label for="marca">Marca <span class="req">*</span></label>
+        <select id="marca"><option value="">Selecione a marca</option></select>
+        <div class="err">Selecione a marca.</div>
+      </div>
+
+      <div class="field" id="fl-pdv" hidden>
+        <label for="pdv">Ponto de venda <span class="req">*</span></label>
+        <select id="pdv"></select>
+        <div class="err">Selecione o ponto de venda.</div>
+      </div>
+
+      <div class="info" id="pdvResumo" hidden></div>
+      <div class="info warn" id="semCadastro" hidden>Nenhum ponto de venda cadastrado para esta cidade, segmento e marca. Informe os dados abaixo.</div>
+
+      <div id="manual" hidden>
+        <div class="field" id="fl-grupo">
+          <label for="grupo">Grupo econômico <span class="req">*</span></label>
+          <input type="text" id="grupo" list="dl-grupos" placeholder="Digite para buscar o grupo" />
+          <datalist id="dl-grupos"></datalist>
+          <div class="err">Escolha um grupo da lista.</div>
+        </div>
+        <div class="field" id="fl-mf">
+          <label>Matriz ou filial <span class="req">*</span></label>
+          <div class="pills" id="mf"></div>
+          <div class="err">Selecione matriz ou filial.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Visita</h2>
+      <div class="field" id="fl-data">
+        <label for="data">Data da visita</label>
+        <input type="text" id="data" class="ro" readonly tabindex="-1" aria-readonly="true" />
+        <div class="hint">🔒 Preenchida automaticamente com a data de hoje.</div>
+      </div>
+      <div class="field" id="fl-tipo">
+        <label>Tipo da visita <span class="req">*</span></label>
+        <div class="pills" id="tipo"></div>
+        <div class="err">Selecione o tipo da visita.</div>
+      </div>
+      <div class="field" id="fl-valor" hidden>
+        <label for="valor">Valor da venda (R$) <span class="req">*</span></label>
+        <input type="text" id="valor" inputmode="numeric" placeholder="0,00" />
+        <div class="err">Informe o valor da venda.</div>
+      </div>
+      <div class="field" id="fl-contato">
+        <label for="contato">Pessoa de contato <span class="req">*</span></label>
+        <input type="text" id="contato" placeholder="Nome" autocapitalize="words" />
+        <div class="err">Informe a pessoa de contato.</div>
+      </div>
+      <div class="field" id="fl-telefone">
+        <label for="telefone">Telefone</label>
+        <input type="tel" id="telefone" inputmode="tel" placeholder="(00) 00000-0000" />
+        <div class="err">Telefone incompleto.</div>
+      </div>
+      <div class="field" id="fl-descricao">
+        <label for="descricao">Breve descrição da visita</label>
+        <textarea id="descricao" maxlength="600" placeholder="O que foi tratado, próximos passos..."></textarea>
+      </div>
+    </section>
+
+  </form>
+</main>
+
+<div class="bar"><button type="button" id="enviar">Registrar visita</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const REGIONAIS = {
+    "1": { nome: "Sul",            ufs: ["PR","SC","RS"] },
+    "2": { nome: "Sudeste",        ufs: ["SP","RJ","MG","ES"] },
+    "3": { nome: "Centro-Oeste",   ufs: ["GO","MT","MS","DF"] },
+    "4": { nome: "Norte/Nordeste", ufs: ["AC","AM","AP","PA","RO","RR","TO","AL","BA","CE","MA","PB","PE","PI","RN","SE"] }
+  };
+  const SEGMENTOS = ["Caminhões", "Máquinas"];
+  const TIPOS = ["Prospecção inicial", "Prospecção retorno", "Manutenção", "Fechamento"];
+  const OUTRO_GRUPO = "Outro / não listado";
+  const AMBIENTE_TESTE = new URLSearchParams(location.search).get("ambiente") === "teste";
+  const SUF = AMBIENTE_TESTE ? "_teste" : "";
+  const FILA_KEY = "dealer_actioil_fila_v1" + SUF;
+  const CTX_KEY = "dealer_actioil_ctx_v1" + SUF;
+  const CFG_KEY = "dealer_actioil_cfg_v2" + SUF;
+
+  let CFG = { sheetUrl: "" };
+  let REPS = [];
+  let MARCAS = [];
+  let EMPRESAS = [];
+  let GRUPOS = [];
+  let CIDADES = {};
+  let enviando = false;
+
+  const $ = id => document.getElementById(id);
+  const norm = s => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
+  const findIn = (list, v) => { const n = norm(v); return n ? (list.find(x => norm(x) === n) || null) : null; };
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  const ordenar = (arr, key) => [...arr].sort((a, b) =>
+    (key ? key(a) : a).localeCompare(key ? key(b) : b, "pt-BR", { sensitivity: "base" }));
+
+  function buildPills(el, items, cols, extraClass) {
+    el.innerHTML = "";
+    el.style.setProperty("--cols", cols);
+    items.forEach(it => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pill" + (extraClass ? " " + extraClass(it) : "");
+      b.dataset.val = it.value;
+      b.textContent = it.label;
+      el.appendChild(b);
+    });
+  }
+  const pillVal = el => { const a = el.querySelector(".pill.active"); return a ? a.dataset.val : ""; };
+  const setPill = (el, v) => el.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.val === v));
+  function onPill(el, cb) {
+    el.addEventListener("click", e => {
+      const p = e.target.closest(".pill");
+      if (!p) return;
+      setPill(el, p.dataset.val);
+      cb(p.dataset.val);
+    });
+  }
+  const clearInvalid = id => $(id).classList.remove("invalid");
+
+  function saveCtx() {
+    try {
+      localStorage.setItem(CTX_KEY, JSON.stringify({
+        rep: $("rep").value, regional: pillVal($("regional")), uf: pillVal($("uf")),
+        cidade: $("cidade").value, segmento: pillVal($("segmento"))
+      }));
+    } catch (e) {}
+  }
+  function loadCtx() {
+    try { return JSON.parse(localStorage.getItem(CTX_KEY) || "{}"); } catch (e) { return {}; }
+  }
+
+  function cidadeAtual() {
+    const uf = pillVal($("uf"));
+    return uf ? findIn(CIDADES[uf] || [], $("cidade").value) : null;
+  }
+
+  function popularRep() {
+    const reg = pillVal($("regional"));
+    const atual = $("rep").value;
+    const lista = reg
+      ? REPS.filter(r => { const rs = r.regional.match(/[1-4]/g); return !rs || rs.includes(reg); })
+      : [];
+    $("rep").disabled = !reg;
+    $("rep").innerHTML = `<option value="">${reg ? "Selecione seu nome" : "Selecione a regional primeiro"}</option>` +
+      ordenar(lista, r => r.nome).map(r => `<option value="${esc(r.nome)}">${esc(r.nome)}</option>`).join("");
+    if (lista.some(r => r.nome === atual)) $("rep").value = atual;
+  }
+  function popularMarcas() {
+    const atual = $("marca").value;
+    const seg = pillVal($("segmento"));
+    const lista = ordenar(MARCAS.filter(m => norm(m.segmento) === norm(seg)).map(m => m.marca));
+    $("marca").innerHTML = '<option value="">Selecione a marca</option>' +
+      lista.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+    if (lista.includes(atual)) $("marca").value = atual;
+  }
+  function popularGrupos() {
+    GRUPOS = ordenar([...new Set(EMPRESAS.map(e => e.grupo).filter(Boolean))]);
+    GRUPOS.push(OUTRO_GRUPO);
+    $("dl-grupos").innerHTML = GRUPOS.map(g => `<option value="${esc(g)}"></option>`).join("");
+  }
+
+  function pdvsDisponiveis() {
+    const uf = pillVal($("uf"));
+    const cid = cidadeAtual();
+    const seg = pillVal($("segmento"));
+    const marca = $("marca").value;
+    if (!uf || !cid || !seg || !marca) return null;
+    return EMPRESAS.filter(e => e.uf === uf && norm(e.cidade) === norm(cid) && norm(e.segmento) === norm(seg) && norm(e.marca) === norm(marca));
+  }
+  const rotuloPdv = e => `${e.grupo} · ${e.marca} · ${e.mf}`;
+
+  function modo() {
+    const lista = pdvsDisponiveis();
+    if (lista === null) return { tipo: "incompleto" };
+    if (lista.length === 0) return { tipo: "manual", semCadastro: true };
+    const v = $("pdv").value;
+    if (!v) return { tipo: "escolher", lista };
+    if (v === "__novo__") return { tipo: "manual", lista };
+    return { tipo: "cadastrado", lista, pdv: lista.find(e => e.id === v) };
+  }
+
+  function renderPdv(reconstruir) {
+    popularMarcas();
+    $("fl-marca").hidden = !pillVal($("segmento"));
+    const lista = pdvsDisponiveis();
+    if (reconstruir) {
+      const atual = $("pdv").value;
+      $("pdv").innerHTML = '<option value="">Selecione o ponto de venda</option>' +
+        ordenar(lista || [], rotuloPdv).map(e => `<option value="${esc(e.id)}">${esc(rotuloPdv(e))}</option>`).join("") +
+        (lista && lista.length ? '<option value="__novo__">➕ Não está na lista (novo ponto de venda)</option>' : "");
+      if (lista && lista.some(e => e.id === atual)) $("pdv").value = atual;
+    }
+    const m = modo();
+    $("fl-pdv").hidden = !(m.lista && m.lista.length);
+    $("semCadastro").hidden = !m.semCadastro;
+    $("manual").hidden = m.tipo !== "manual";
+    $("pdvResumo").hidden = m.tipo !== "cadastrado";
+    if (m.tipo === "cadastrado") $("pdvResumo").textContent = `✓ ${m.pdv.grupo} · ${m.pdv.marca} · ${m.pdv.mf}`;
+  }
+
+  function aplicarConfig(c) {
+    if (Array.isArray(c.representantes)) {
+      REPS = c.representantes.map(r => typeof r === "string" ? { nome: r, regional: "" } : { nome: String(r.nome), regional: String(r.regional || "") });
+    }
+    if (Array.isArray(c.marcas)) MARCAS = c.marcas;
+    if (Array.isArray(c.empresas)) EMPRESAS = c.empresas;
+    popularRep();
+    popularGrupos();
+    renderPdv(true);
+  }
+
+  async function sincronizarConfig() {
+    if (!CFG.sheetUrl) return;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 40000);
+    try {
+      const res = await fetch(`${CFG.sheetUrl}?action=config&t=${Date.now()}`, { cache: "no-store", signal: ctrl.signal });
+      const d = await res.json();
+      if (!d || !d.ok) return;
+      try { localStorage.setItem(CFG_KEY, JSON.stringify(d)); } catch (e) {}
+      aplicarConfig(d);
+    } catch (e) {
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function escolherRegional(r, auto) {
+    const ufs = REGIONAIS[r].ufs;
+    buildPills($("uf"), ufs.map(u => ({ value: u, label: u })), ufs.length <= 4 ? ufs.length : 4);
+    $("fl-uf").hidden = false;
+    $("cidade").value = "";
+    $("cidade").disabled = true;
+    $("cidade").placeholder = "Selecione a UF primeiro";
+    $("dl-cidades").innerHTML = "";
+    clearInvalid("fl-regional");
+    popularRep();
+    if (ufs.length === 1) { setPill($("uf"), ufs[0]); escolherUF(ufs[0], auto); }
+    else renderPdv(true);
+  }
+  function escolherUF(uf, auto) {
+    const lista = CIDADES[uf] || [];
+    $("dl-cidades").innerHTML = lista.map(c => `<option value="${esc(c)}"></option>`).join("");
+    $("cidade").disabled = false;
+    $("cidade").value = "";
+    $("cidade").placeholder = "Digite para buscar a cidade";
+    clearInvalid("fl-uf");
+    renderPdv(true);
+    saveCtx();
+    if (!auto) $("cidade").focus();
+  }
+  function escolherTipo(t) {
+    const fech = t === "Fechamento";
+    $("fl-valor").hidden = !fech;
+    if (!fech) $("valor").value = "";
+    clearInvalid("fl-tipo");
+    if (fech) $("valor").focus();
+  }
+
+  function maskValor(v) {
+    const d = v.replace(/\D/g, "").slice(0, 12);
+    if (!d) return "";
+    return (parseInt(d, 10) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function maskTel(v) {
+    const d = v.replace(/\D/g, "").slice(0, 11);
+    if (!d) return "";
+    if (d.length <= 2) return "(" + d;
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  }
+
+  function atualizarData() {
+    $("data").value = new Date().toLocaleDateString("pt-BR");
+  }
+
+  function showToast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2400);
+  }
+
+  const loadFila = () => { try { return JSON.parse(localStorage.getItem(FILA_KEY) || "[]"); } catch (e) { return []; } };
+  const saveFila = f => localStorage.setItem(FILA_KEY, JSON.stringify(f));
+
+  function atualizarPendentes() {
+    const n = loadFila().length;
+    const box = $("pend");
+    if (!CFG.sheetUrl) {
+      box.hidden = false;
+      $("pendTxt").textContent = "Planilha ainda não conectada" + (n ? ` · ${n} visita(s) guardada(s) neste aparelho` : "");
+      $("pendBtn").hidden = true;
+      return;
+    }
+    $("pendBtn").hidden = false;
+    box.hidden = n === 0;
+    $("pendTxt").textContent = n === 1 ? "1 visita aguardando envio" : `${n} visitas aguardando envio`;
+  }
+
+  async function enviarFila() {
+    if (enviando || !CFG.sheetUrl) return;
+    enviando = true;
+    try {
+      while (true) {
+        const fila = loadFila();
+        if (!fila.length) break;
+        const v = fila[0];
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 25000);
+        try {
+          await fetch(CFG.sheetUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(v),
+            signal: ctrl.signal
+          });
+        } catch (e) {
+          break;
+        } finally {
+          clearTimeout(timer);
+        }
+        saveFila(loadFila().filter(x => x.id !== v.id));
+        atualizarPendentes();
+      }
+    } finally {
+      enviando = false;
+      atualizarPendentes();
+    }
+  }
+
+  function novoId() {
+    return (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+      : "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  function validar() {
+    const erros = [];
+    const marcar = (flId, cond) => { $(flId).classList.toggle("invalid", !cond); if (!cond) erros.push(flId); };
+
+    marcar("fl-regional", !!pillVal($("regional")));
+    marcar("fl-rep", !!$("rep").value);
+    marcar("fl-uf", $("fl-uf").hidden ? false : !!pillVal($("uf")));
+    marcar("fl-cidade", !!cidadeAtual());
+    marcar("fl-segmento", !!pillVal($("segmento")));
+    if (pillVal($("segmento"))) marcar("fl-marca", !!$("marca").value);
+
+    const m = modo();
+    marcar("fl-pdv", m.tipo !== "escolher");
+    if (m.tipo === "manual") {
+      marcar("fl-grupo", !!findIn(GRUPOS, $("grupo").value));
+      marcar("fl-mf", !!pillVal($("mf")));
+    }
+
+    const tipo = pillVal($("tipo"));
+    marcar("fl-tipo", !!tipo);
+    if (tipo === "Fechamento") marcar("fl-valor", parseInt($("valor").value.replace(/\D/g, "") || "0", 10) > 0);
+    else $("fl-valor").classList.remove("invalid");
+    marcar("fl-contato", !!$("contato").value.trim());
+    const telDigits = $("telefone").value.replace(/\D/g, "");
+    marcar("fl-telefone", telDigits.length === 0 || telDigits.length >= 10);
+
+    if (erros.length) $(erros[0]).scrollIntoView({ behavior: "smooth", block: "center" });
+    return erros.length === 0;
+  }
+
+  function registrar() {
+    if (!validar()) return;
+    const regional = pillVal($("regional"));
+    const uf = pillVal($("uf"));
+    const tipo = pillVal($("tipo"));
+    const m = modo();
+    const agora = new Date();
+
+    let pdvId, marca, grupo, matrizFilial;
+    if (m.tipo === "cadastrado") {
+      pdvId = m.pdv.id; marca = m.pdv.marca; grupo = m.pdv.grupo; matrizFilial = m.pdv.mf;
+    } else {
+      pdvId = "NOVO"; marca = $("marca").value; grupo = findIn(GRUPOS, $("grupo").value); matrizFilial = pillVal($("mf"));
+    }
+
+    const visita = {
+      id: novoId(),
+      criadoEm: agora.toISOString(),
+      data: agora.toLocaleDateString("sv-SE"),
+      representante: $("rep").value,
+      regional: `${regional} - ${REGIONAIS[regional].nome}`,
+      uf,
+      cidade: cidadeAtual(),
+      segmento: pillVal($("segmento")),
+      pdvId,
+      marca,
+      grupo,
+      matrizFilial,
+      tipo,
+      valor: tipo === "Fechamento" ? parseInt($("valor").value.replace(/\D/g, ""), 10) / 100 : "",
+      contato: $("contato").value.trim(),
+      telefone: $("telefone").value.trim(),
+      descricao: $("descricao").value.trim()
+    };
+    const fila = loadFila();
+    fila.push(visita);
+    saveFila(fila);
+
+    $("pdv").value = "";
+    $("marca").value = "";
+    $("grupo").value = "";
+    setPill($("mf"), "");
+    setPill($("tipo"), "");
+    escolherTipo("");
+    $("contato").value = "";
+    $("telefone").value = "";
+    $("descricao").value = "";
+    renderPdv(false);
+    atualizarData();
+    saveCtx();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("Visita registrada ✓");
+    atualizarPendentes();
+    enviarFila();
+  }
+
+  async function init() {
+    let seed;
+    try {
+      const [cfg, cid] = await Promise.all([
+        fetch("config.json", { cache: "no-cache" }).then(r => r.json()),
+        fetch("cidades.json").then(r => r.json())
+      ]);
+      seed = cfg;
+      CIDADES = {};
+      Object.keys(cid).forEach(uf => { CIDADES[uf] = ordenar(cid[uf]); });
+    } catch (e) {
+      $("erro").hidden = false;
+      return;
+    }
+    CFG.sheetUrl = (AMBIENTE_TESTE ? seed.sheetUrlTeste : seed.sheetUrl) || "";
+    if (AMBIENTE_TESTE) {
+      $("banTeste").hidden = false;
+      document.title = "Dealer actioil (teste)";
+    }
+    atualizarData();
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) atualizarData(); });
+
+    buildPills($("regional"), Object.keys(REGIONAIS).map(k => ({ value: k, label: `${k} · ${REGIONAIS[k].nome}` })), 2);
+    buildPills($("segmento"), SEGMENTOS.map(s => ({ value: s, label: s })), 2);
+    buildPills($("mf"), [{ value: "Matriz", label: "Matriz" }, { value: "Filial", label: "Filial" }], 2);
+    buildPills($("tipo"), TIPOS.map(t => ({ value: t, label: t })), 2, it => it.value === "Fechamento" ? "tipo-fech" : "");
+
+    let cache = null;
+    try { cache = JSON.parse(localStorage.getItem(CFG_KEY) || "null"); } catch (e) {}
+    aplicarConfig(cache && cache.ok ? cache : seed);
+
+    onPill($("regional"), r => { escolherRegional(r); saveCtx(); });
+    onPill($("uf"), uf => escolherUF(uf));
+    onPill($("segmento"), () => { clearInvalid("fl-segmento"); $("pdv").value = ""; renderPdv(true); saveCtx(); });
+    onPill($("mf"), () => clearInvalid("fl-mf"));
+    onPill($("tipo"), escolherTipo);
+
+    $("rep").addEventListener("change", () => { clearInvalid("fl-rep"); saveCtx(); });
+    $("pdv").addEventListener("change", () => { clearInvalid("fl-pdv"); renderPdv(false); });
+    $("marca").addEventListener("change", () => { clearInvalid("fl-marca"); $("pdv").value = ""; renderPdv(true); });
+    $("grupo").addEventListener("input", () => clearInvalid("fl-grupo"));
+    $("grupo").addEventListener("change", () => { const g = findIn(GRUPOS, $("grupo").value); if (g) $("grupo").value = g; });
+    $("cidade").addEventListener("input", () => { clearInvalid("fl-cidade"); $("pdv").value = ""; renderPdv(true); });
+    $("cidade").addEventListener("change", () => {
+      const c = cidadeAtual();
+      if (c) $("cidade").value = c;
+      $("pdv").value = "";
+      renderPdv(true);
+      saveCtx();
+    });
+    $("valor").addEventListener("input", () => { $("valor").value = maskValor($("valor").value); clearInvalid("fl-valor"); });
+    $("telefone").addEventListener("input", () => { $("telefone").value = maskTel($("telefone").value); clearInvalid("fl-telefone"); });
+    $("contato").addEventListener("input", () => clearInvalid("fl-contato"));
+
+    $("enviar").addEventListener("click", registrar);
+    $("pendBtn").addEventListener("click", enviarFila);
+    window.addEventListener("online", () => { enviarFila(); sincronizarConfig(); });
+    setInterval(enviarFila, 60000);
+
+    const ctx = loadCtx();
+    if (ctx.segmento && SEGMENTOS.includes(ctx.segmento)) setPill($("segmento"), ctx.segmento);
+    if (ctx.regional && REGIONAIS[ctx.regional]) {
+      setPill($("regional"), ctx.regional);
+      escolherRegional(ctx.regional, true);
+      if (ctx.rep && [...$("rep").options].some(o => o.value === ctx.rep)) $("rep").value = ctx.rep;
+      if (ctx.uf && REGIONAIS[ctx.regional].ufs.includes(ctx.uf)) {
+        setPill($("uf"), ctx.uf);
+        escolherUF(ctx.uf, true);
+        const c = findIn(CIDADES[ctx.uf] || [], ctx.cidade);
+        if (c) { $("cidade").value = c; renderPdv(true); }
+        window.scrollTo(0, 0);
+      }
+    }
+
+    renderPdv(true);
+    atualizarPendentes();
+    enviarFila();
+    sincronizarConfig();
+  }
+
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+  init();
+</script>
+</body>
+</html>

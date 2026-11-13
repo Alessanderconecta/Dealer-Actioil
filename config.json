@@ -1,0 +1,165 @@
+{
+  "sheetUrl": "",
+  "sheetUrlTeste": "",
+  "representantes": [
+    {
+      "nome": "Representante 01",
+      "regional": "1"
+    },
+    {
+      "nome": "Representante 02",
+      "regional": "2"
+    },
+    {
+      "nome": "Representante 03",
+      "regional": "3"
+    }
+  ],
+  "marcas": [
+    {
+      "segmento": "Caminhões",
+      "marca": "VW Truck e Bus"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Mercedes-Benz"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Volvo"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Scania"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Iveco"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "DAF"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Foton"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Agrale"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "JAC"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Ford"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Sany"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Nanjing"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Hyundai"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Tesla"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "BYD"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "XCMG"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Sinotruk"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "CNHTC"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "International"
+    },
+    {
+      "segmento": "Caminhões",
+      "marca": "Peterbilt"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "John Deere"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Massey Ferguson"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Valtra"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Fendt"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "New Holland"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Case IH"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Agrale"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Agritech"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Mahindra"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "LS Tractor"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Yanmar"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Kioti"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Landini"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Jacto"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Tatu Marchesan"
+    },
+    {
+      "segmento": "Máquinas",
+      "marca": "Horsch"
+    }
+  ],
+  "empresas": []
+}
