@@ -64,7 +64,7 @@ function lista(sh, coluna, valores) {
 
 function paraData(s) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ""));
-  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : seguro(s);
+  return m ? Utilities.parseDate(String(s), SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), "yyyy-MM-dd") : seguro(s);
 }
 
 function seguro(v) {
