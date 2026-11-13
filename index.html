@@ -89,6 +89,19 @@
   .field.invalid .pill.active{border-color:var(--blue);}
   .err{display:none; font-size:12px; color:var(--red); margin-top:5px; font-weight:600;}
   .field.invalid .err{display:block;}
+  .combo{position:relative;}
+  .combo-list{
+    position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:6;
+    max-height:min(264px,42vh); overflow-y:auto; -webkit-overflow-scrolling:touch;
+    background:#0f1930; border:1.5px solid var(--blue); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.6);
+  }
+  .combo-item{
+    display:block; width:100%; text-align:left; padding:13px 14px; font:inherit; font-size:15px; color:var(--ink);
+    background:none; border:0; border-bottom:1px solid var(--line); cursor:pointer;
+  }
+  .combo-item:last-of-type{border-bottom:0;}
+  .combo-item:hover,.combo-item:active{background:rgba(91,140,255,.2);}
+  .combo-vazio{padding:12px 14px; color:var(--muted); font-size:13px;}
   .info{margin:0 0 16px; padding:10px 12px; background:rgba(91,140,255,.13); border-radius:12px; font-size:13px; color:#b9cfff; font-weight:600;}
   .info.warn{background:rgba(250,204,21,.1); color:#f1d36e; font-weight:500;}
   #banTeste{
@@ -165,8 +178,7 @@
       </div>
       <div class="field" id="fl-cidade">
         <label for="cidade">Cidade <span class="req">*</span></label>
-        <input type="text" id="cidade" list="dl-cidades" placeholder="Selecione a UF primeiro" disabled autocapitalize="words" />
-        <datalist id="dl-cidades"></datalist>
+        <input type="text" id="cidade" placeholder="Selecione a UF primeiro" disabled autocomplete="off" autocapitalize="words" />
         <div class="err">Escolha uma cidade da lista.</div>
       </div>
     </section>
@@ -197,8 +209,7 @@
       <div id="manual" hidden>
         <div class="field" id="fl-grupo">
           <label for="grupo">Grupo econômico <span class="req">*</span></label>
-          <input type="text" id="grupo" list="dl-grupos" placeholder="Digite para buscar o grupo" />
-          <datalist id="dl-grupos"></datalist>
+          <input type="text" id="grupo" placeholder="Digite para buscar o grupo" autocomplete="off" />
           <div class="err">Escolha um grupo da lista.</div>
         </div>
         <div class="field" id="fl-mf">
@@ -342,7 +353,6 @@
   function popularGrupos() {
     GRUPOS = ordenar([...new Set(EMPRESAS.map(e => e.grupo).filter(Boolean))]);
     GRUPOS.push(OUTRO_GRUPO);
-    $("dl-grupos").innerHTML = GRUPOS.map(g => `<option value="${esc(g)}"></option>`).join("");
   }
 
   function pdvsDisponiveis() {
@@ -418,7 +428,6 @@
     $("cidade").value = "";
     $("cidade").disabled = true;
     $("cidade").placeholder = "Selecione a UF primeiro";
-    $("dl-cidades").innerHTML = "";
     clearInvalid("fl-regional");
     popularRep();
     if (ufs.length === 1) { setPill($("uf"), ufs[0]); escolherUF(ufs[0], auto); }
@@ -426,7 +435,6 @@
   }
   function escolherUF(uf, auto) {
     const lista = CIDADES[uf] || [];
-    $("dl-cidades").innerHTML = lista.map(c => `<option value="${esc(c)}"></option>`).join("");
     $("cidade").disabled = false;
     $("cidade").value = "";
     $("cidade").placeholder = "Digite para buscar a cidade";
@@ -455,6 +463,71 @@
     if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
     if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
     return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  }
+
+  function combo(inputId, fonte, aoEscolher) {
+    const input = $(inputId);
+    const wrap = document.createElement("div");
+    wrap.className = "combo";
+    input.parentNode.insertBefore(wrap, input);
+    wrap.appendChild(input);
+    const lista = document.createElement("div");
+    lista.className = "combo-list";
+    lista.hidden = true;
+    wrap.appendChild(lista);
+    let itens = [];
+
+    const filtrar = () => {
+      const n = norm(input.value);
+      const base = fonte();
+      if (!n) return base;
+      const inicio = base.filter(x => norm(x).startsWith(n));
+      const meio = base.filter(x => !norm(x).startsWith(n) && norm(x).includes(n));
+      return inicio.concat(meio);
+    };
+    const render = () => {
+      if (input.disabled) { lista.hidden = true; return; }
+      itens = filtrar();
+      if (!itens.length) {
+        lista.innerHTML = '<div class="combo-vazio">Nenhum resultado</div>';
+      } else {
+        lista.innerHTML = itens.slice(0, 60).map(x => `<button type="button" class="combo-item" data-v="${esc(x)}">${esc(x)}</button>`).join("") +
+          (itens.length > 60 ? `<div class="combo-vazio">Digite mais para filtrar (${itens.length} opções)</div>` : "");
+      }
+      lista.hidden = false;
+    };
+    const escolher = v => { input.value = v; lista.hidden = true; if (aoEscolher) aoEscolher(v); };
+
+    input.addEventListener("focus", () => {
+      render();
+      setTimeout(() => input.scrollIntoView({ block: "start", behavior: "smooth" }), 250);
+    });
+    input.addEventListener("input", render);
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (itens.length) escolher(findIn(fonte(), input.value) || itens[0]);
+      } else if (e.key === "Escape") {
+        lista.hidden = true;
+      }
+    });
+    lista.addEventListener("mousedown", e => e.preventDefault());
+    lista.addEventListener("click", e => {
+      const b = e.target.closest(".combo-item");
+      if (b) escolher(b.dataset.v);
+    });
+    input.addEventListener("blur", () => setTimeout(() => {
+      lista.hidden = true;
+      if (input.disabled) return;
+      const exato = findIn(fonte(), input.value);
+      if (exato) { escolher(exato); return; }
+      const n = norm(input.value);
+      if (!n) return;
+      const base = fonte();
+      const inicio = base.filter(x => norm(x).startsWith(n));
+      const cand = inicio.length ? inicio : base.filter(x => norm(x).includes(n));
+      if (cand.length === 1) escolher(cand[0]);
+    }, 200));
   }
 
   function atualizarData() {
@@ -649,7 +722,9 @@
     $("pdv").addEventListener("change", () => { clearInvalid("fl-pdv"); renderPdv(false); });
     $("marca").addEventListener("change", () => { clearInvalid("fl-marca"); $("pdv").value = ""; renderPdv(true); });
     $("grupo").addEventListener("input", () => clearInvalid("fl-grupo"));
-    $("grupo").addEventListener("change", () => { const g = findIn(GRUPOS, $("grupo").value); if (g) $("grupo").value = g; });
+    combo("grupo", () => GRUPOS, () => clearInvalid("fl-grupo"));
+    combo("cidade", () => { const uf = pillVal($("uf")); return uf ? (CIDADES[uf] || []) : []; },
+      () => { clearInvalid("fl-cidade"); $("pdv").value = ""; renderPdv(true); saveCtx(); });
     $("cidade").addEventListener("input", () => { clearInvalid("fl-cidade"); $("pdv").value = ""; renderPdv(true); });
     $("cidade").addEventListener("change", () => {
       const c = cidadeAtual();

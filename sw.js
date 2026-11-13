@@ -1,4 +1,4 @@
-const CACHE = "dealer-actioil-v3";
+const CACHE = "dealer-actioil-v4";
 const ASSETS = ["./", "./index.html", "./config.json", "./cidades.json", "./logo.png", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
