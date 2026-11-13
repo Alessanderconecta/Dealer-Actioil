@@ -497,10 +497,23 @@
       lista.hidden = false;
     };
     const escolher = v => { input.value = v; lista.hidden = true; if (aoEscolher) aoEscolher(v); };
+    let tocando = false;
+    const fechar = () => {
+      lista.hidden = true;
+      if (input.disabled) return;
+      const exato = findIn(fonte(), input.value);
+      if (exato) { escolher(exato); return; }
+      const n = norm(input.value);
+      if (!n) return;
+      const base = fonte();
+      const inicio = base.filter(x => norm(x).startsWith(n));
+      const cand = inicio.length ? inicio : base.filter(x => norm(x).includes(n));
+      if (cand.length === 1) escolher(cand[0]);
+    };
 
     input.addEventListener("focus", () => {
       render();
-      setTimeout(() => input.scrollIntoView({ block: "start", behavior: "smooth" }), 250);
+      setTimeout(() => input.scrollIntoView({ block: "start" }), 300);
     });
     input.addEventListener("input", render);
     input.addEventListener("keydown", e => {
@@ -512,22 +525,21 @@
       }
     });
     lista.addEventListener("mousedown", e => e.preventDefault());
+    lista.addEventListener("pointerdown", () => { tocando = true; });
+    const soltou = () => { setTimeout(() => { tocando = false; }, 400); };
+    lista.addEventListener("pointerup", soltou);
+    lista.addEventListener("pointercancel", soltou);
     lista.addEventListener("click", e => {
       const b = e.target.closest(".combo-item");
       if (b) escolher(b.dataset.v);
     });
     input.addEventListener("blur", () => setTimeout(() => {
-      lista.hidden = true;
-      if (input.disabled) return;
-      const exato = findIn(fonte(), input.value);
-      if (exato) { escolher(exato); return; }
-      const n = norm(input.value);
-      if (!n) return;
-      const base = fonte();
-      const inicio = base.filter(x => norm(x).startsWith(n));
-      const cand = inicio.length ? inicio : base.filter(x => norm(x).includes(n));
-      if (cand.length === 1) escolher(cand[0]);
-    }, 200));
+      if (tocando || document.activeElement === input) return;
+      fechar();
+    }, 150));
+    document.addEventListener("pointerdown", e => {
+      if (!lista.hidden && !wrap.contains(e.target)) fechar();
+    });
   }
 
   function atualizarData() {
