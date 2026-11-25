@@ -156,7 +156,7 @@ function configuracao() {
       marca: txt(r[3]),
       uf: txt(r[4]).toUpperCase(),
       cidade: txt(r[5]),
-      mf: txt(r[6]) || "Matriz"
+      mf: txt(r[6]) || "A confirmar"
     });
   });
 
